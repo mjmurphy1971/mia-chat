@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mia</title>
+
   <style>
     body {
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
@@ -15,28 +16,117 @@
       height: 100vh;
       margin: 0;
     }
+
     .card {
       background: white;
       padding: 32px;
       border-radius: 16px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 520px;
       text-align: center;
     }
+
     h1 {
       margin-bottom: 8px;
     }
+
     p {
-      opacity: 0.8;
+      opacity: 0.85;
+      line-height: 1.5;
+    }
+
+    #chat-log {
+      margin-top: 20px;
+      text-align: left;
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 12px;
+      border: 1px solid rgba(0,0,0,0.08);
+      border-radius: 12px;
+      background: #fafafa;
+      font-size: 14px;
+    }
+
+    #chat-log div {
+      margin-bottom: 8px;
+    }
+
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.12);
+      font-family: inherit;
+      resize: none;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: none;
+      background: #4f46e5;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      font-size: 14px;
+    }
+
+    button:hover {
+      background: #4338ca;
     }
   </style>
 </head>
+
 <body>
   <div class="card">
     <h1>Mia is online and ready to assist you 🤍</h1>
-    <p>Hi, I’m <strong>Mia</strong>, Mary Murphy’s Executive Assistant.<br /><br />
-  You can ask me anything about her experience, qualifications, and services.
-  I can also help you download her resume or schedule time to meet with her.<br /><br />
-  Just ask — I’m happy to assist.</p>
+
+    <p>
+      Hi, I’m <strong>Mia</strong>, Mary Murphy’s Executive Assistant.<br /><br />
+      You can ask me about her experience, qualifications, and services.
+      I can also help you download her resume or schedule time to meet with her.<br /><br />
+      Just ask — I’m happy to assist.
+    </p>
+
+    <div id="chat-log">
+      <div><strong>Mia:</strong> How can I help you today?</div>
+    </div>
+
+    <textarea
+      id="chat-input"
+      rows="3"
+      placeholder="Type your question here…"
+    ></textarea>
+
+    <button id="send-btn">Send</button>
   </div>
+
+  <script>
+    const input = document.getElementById("chat-input");
+    const log = document.getElementById("chat-log");
+    const btn = document.getElementById("send-btn");
+
+    btn.addEventListener("click", () => {
+      const text = input.value.trim();
+      if (!text) return;
+
+      const userMsg = document.createElement("div");
+      userMsg.innerHTML = "<strong>You:</strong> " + text;
+      log.appendChild(userMsg);
+
+      const miaMsg = document.createElement("div");
+      miaMsg.innerHTML =
+        "<strong>Mia:</strong> Thanks for your question. I’ll be able to assist with that shortly.";
+      log.appendChild(miaMsg);
+
+      input.value = "";
+      log.scrollTop = log.scrollHeight;
+    });
+  </script>
 </body>
 </html>
