@@ -107,26 +107,48 @@
   </div>
 
   <script>
-    const input = document.getElementById("chat-input");
-    const log = document.getElementById("chat-log");
-    const btn = document.getElementById("send-btn");
+  const input = document.getElementById("chat-input");
+  const log = document.getElementById("chat-log");
+  const btn = document.getElementById("send-btn");
 
-    btn.addEventListener("click", () => {
-      const text = input.value.trim();
-      if (!text) return;
+  function addMessage(sender, text) {
+    const div = document.createElement("div");
+    div.innerHTML = `<strong>${sender}:</strong> ${text}`;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+  }
 
-      const userMsg = document.createElement("div");
-      userMsg.innerHTML = "<strong>You:</strong> " + text;
-      log.appendChild(userMsg);
+  function miaReply(userText) {
+    const text = userText.toLowerCase();
 
-      const miaMsg = document.createElement("div");
-      miaMsg.innerHTML =
-        "<strong>Mia:</strong> Thanks for your question. I’ll be able to assist with that shortly.";
-      log.appendChild(miaMsg);
+    // Friendly greetings
+    if (text.includes("hello") || text.includes("hi")) {
+      return "Hello! I’m doing well, thank you for asking. How can I assist you today?";
+    }
 
-      input.value = "";
-      log.scrollTop = log.scrollHeight;
-    });
-  </script>
+    // Resume requests
+    if (text.includes("resume")) {
+      return "I can help with that. You can download Mary’s resume directly from her site, or I can point you to it if you’d like.";
+    }
+
+    // Scheduling requests
+    if (text.includes("schedule") || text.includes("meet") || text.includes("calendar")) {
+      return "I can help you schedule a 15-minute introduction meeting with Mary. Let me know if you’d like the scheduling link.";
+    }
+
+    // Default safe response
+    return "I can help with questions about Mary’s experience, qualifications, or services. What would you like to know?";
+  }
+
+  btn.addEventListener("click", () => {
+    const text = input.value.trim();
+    if (!text) return;
+
+    addMessage("You", text);
+    addMessage("Mia", miaReply(text));
+
+    input.value = "";
+  });
+</script>
 </body>
 </html>
