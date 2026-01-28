@@ -107,7 +107,10 @@
   </div>
 
   <script>
-  const input = document.getElementById("chat-input");
+  <script>
+  const RESUME_URL = "https://mary-murphy.online/resume";
+  const CALENDLY_URL = "https://calendly.com/mary-thedreamwork/30min";
+    const input = document.getElementById("chat-input");
   const log = document.getElementById("chat-log");
   const btn = document.getElementById("send-btn");
 
@@ -127,15 +130,17 @@
     }
 
     // Resume requests
-    if (text.includes("resume")) {
-      return "I can help with that. You can download Mary’s resume directly from her site, or I can point you to it if you’d like.";
-    }
+if (text.includes("resume")) {
+  return `You can download Mary’s resume here:
+  <a href="${RESUME_URL}" target="_blank">Download Resume (PDF)</a>`;
+}
 
     // Scheduling requests
-    if (text.includes("schedule") || text.includes("meet") || text.includes("calendar")) {
-      return "I can help you schedule a 15-minute introduction meeting with Mary. Let me know if you’d like the scheduling link.";
-    }
-
+if (text.includes("schedule") || text.includes("meet") || text.includes("calendar")) {
+  return `You can schedule a 15-minute introduction meeting with Mary here:
+  <a href="${CALENDLY_URL}" target="_blank">Schedule a Meeting</a>`;
+}
+   
     // Default safe response
     return "I can help with questions about Mary’s experience, qualifications, or services. What would you like to know?";
   }
