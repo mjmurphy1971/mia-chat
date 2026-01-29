@@ -6,6 +6,8 @@
   <title>Mia</title>
 
   <style>
+    * { box-sizing: border-box; }
+
     body {
       font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
       background: #f8fafc;
@@ -15,7 +17,7 @@
       justify-content: center;
       height: 100vh;
       margin: 0;
-      padding: 16px;
+      padding: 12px;
     }
 
     .card {
@@ -24,10 +26,14 @@
       box-shadow: 0 20px 40px rgba(0,0,0,0.10);
       width: 100%;
       max-width: 560px;
-      height: 560px; /* key: stable height */
+
+      /* ✅ Key change: fit inside iframe/small viewports */
+      height: min(560px, calc(100vh - 24px));
+      min-height: 420px;
+
       display: flex;
       flex-direction: column;
-      padding: 18px;
+      padding: 14px;
     }
 
     /* Header */
@@ -35,7 +41,7 @@
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      padding-bottom: 10px;
+      padding-bottom: 8px;
       border-bottom: 1px solid rgba(0,0,0,0.08);
     }
 
@@ -47,24 +53,26 @@
     .chat-status {
       font-size: 12px;
       opacity: 0.7;
+      white-space: nowrap;
     }
 
     .scope-line {
       font-size: 12px;
-      opacity: 0.7;
-      margin: 10px 0;
-      line-height: 1.4;
+      opacity: 0.72;
+      margin: 8px 0 10px;
+      line-height: 1.35;
     }
 
     /* Chat log */
     #chat-log {
-      flex: 1;               /* THIS makes it grow */
+      flex: 1;
       overflow-y: auto;
-      padding: 12px;
+      padding: 10px;
       border: 1px solid rgba(0,0,0,0.08);
       border-radius: 12px;
       background: #fafafa;
       font-size: 14px;
+      min-height: 140px;
     }
 
     .msg {
@@ -82,9 +90,9 @@
       text-decoration: underline;
     }
 
-    /* Input area (always visible) */
+    /* Input area - always visible */
     .input-area {
-      margin-top: 12px;
+      margin-top: 10px;
     }
 
     textarea {
@@ -96,7 +104,9 @@
       resize: none;
       font-size: 14px;
       outline: none;
-      box-sizing: border-box;
+
+      /* ✅ Slightly smaller so button fits */
+      height: 54px;
     }
 
     button {
@@ -139,7 +149,6 @@
     <div class="input-area">
       <textarea
         id="chat-input"
-        rows="3"
         placeholder="Type your question… (Enter to send, Shift+Enter for a new line)"
       ></textarea>
       <button id="send-btn">Send</button>
@@ -170,11 +179,11 @@
       }
 
       if (t.includes("resume")) {
-        return `Here’s the resume page (PDF download): <a href="${RESUME_URL}" target="_blank">Download Resume (PDF)</a>`;
+        return `Here’s the resume page (PDF download): <a href="${RESUME_URL}" target="_blank" rel="noreferrer">Download Resume (PDF)</a>`;
       }
 
       if (t.includes("schedule") || t.includes("meeting") || t.includes("calendar")) {
-        return `You can book a 15-minute introduction meeting here: <a href="${CALENDLY_URL}" target="_blank">Schedule a Meeting</a>`;
+        return `You can book a 15-minute introduction meeting here: <a href="${CALENDLY_URL}" target="_blank" rel="noreferrer">Schedule a Meeting</a>`;
       }
 
       return "I can help with questions about Mary’s experience, qualifications, or services based on her portfolio.";
