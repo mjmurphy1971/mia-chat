@@ -3,8 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
 const MIA_AVATAR = "/mia-avatar.png";
-const RESUME_PDF_URL =
-  "https://docs.google.com/document/d/17E7JVu0iEKOHQuEkwt9o18LhR96UuskD/export?format=pdf";
+
+// ✅ Direct-download Google Drive link (works for prospects)
+const RESUME_URL =
+  "https://drive.google.com/uc?export=download&id=1uV-u6awbcyXpXtwyygLuH1YgD2ntH0HT";
+
+// ✅ Calendly booking link
+const SCHEDULE_URL = "https://calendly.com/mary-thedreamwork/30min";
 
 type ChatMsg = {
   role: "user" | "assistant";
@@ -15,7 +20,7 @@ const INITIAL_MESSAGES: ChatMsg[] = [
   {
     role: "assistant",
     content:
-      "Hi — I'm Mia, Mary's Executive Assistant. Ask me if you have any questions about her resume, services, or to schedule time to meet Mary.  I am more than happy to assist you.",
+      "Hi, I’m Mia — Mary Murphy’s executive assistant. You can ask me anything about her experience, qualifications, and services. I can also help you download her resume or schedule time to meet with her. Just ask — I’m here to help.",
   },
 ];
 
@@ -43,7 +48,10 @@ export default function Home() {
     setInput("");
     setLoading(true);
 
-    const nextMessages: ChatMsg[] = [...messages, { role: "user", content: userText }];
+    const nextMessages: ChatMsg[] = [
+      ...messages,
+      { role: "user", content: userText },
+    ];
     setMessages(nextMessages);
 
     try {
@@ -51,7 +59,10 @@ export default function Home() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: nextMessages.map((m) => ({ role: m.role, content: m.content })),
+          messages: nextMessages.map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
         }),
       });
 
@@ -59,7 +70,8 @@ export default function Home() {
 
       const miaText =
         ((data?.reply ?? "") as string).toString().trim() ||
-        "Sorry — I'm not able to assist with that request.";
+        "Sorry — I’m not able to assist with that request.";
+
       setMessages((prev) => [...prev, { role: "assistant", content: miaText }]);
     } catch (err: any) {
       setMessages((prev) => [
@@ -67,7 +79,7 @@ export default function Home() {
         {
           role: "assistant",
           content:
-            "I hit an error talking to the server. Check the terminal for details, then try again.",
+            "I hit an error talking to the server. If you’re testing locally, check the terminal. If this is deployed, check Vercel Logs — then try again.",
         },
       ]);
     } finally {
@@ -119,11 +131,18 @@ export default function Home() {
               }}
             />
             <div>
-              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 700, letterSpacing: 0.2 }}>
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: 22,
+                  fontWeight: 700,
+                  letterSpacing: 0.2,
+                }}
+              >
                 Mia
               </h1>
               <p style={{ margin: "4px 0 0", opacity: 0.78, fontSize: 13 }}>
-                Mary Murphy&apos;s professional assistant
+                Mary Murphy&apos;s executive assistant
               </p>
             </div>
           </div>
@@ -183,7 +202,9 @@ export default function Home() {
                     borderRadius: 14,
                     lineHeight: 1.35,
                     whiteSpace: "pre-wrap",
-                    background: isUser ? "rgba(59,130,246,0.25)" : "rgba(255,255,255,0.08)",
+                    background: isUser
+                      ? "rgba(59,130,246,0.25)"
+                      : "rgba(255,255,255,0.08)",
                     border: "1px solid rgba(255,255,255,0.10)",
                   }}
                 >
@@ -219,7 +240,15 @@ export default function Home() {
           })}
 
           {loading && (
-            <div style={{ display: "flex", justifyContent: "flex-start", gap: 10, marginBottom: 12, alignItems: "flex-end" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "flex-start",
+                gap: 10,
+                marginBottom: 12,
+                alignItems: "flex-end",
+              }}
+            >
               <img
                 src={MIA_AVATAR}
                 alt="Mia"
@@ -243,7 +272,9 @@ export default function Home() {
                   border: "1px solid rgba(255,255,255,0.10)",
                 }}
               >
-                <div style={{ fontSize: 12, opacity: 0.75, marginBottom: 6 }}>Mia</div>
+                <div style={{ fontSize: 12, opacity: 0.75, marginBottom: 6 }}>
+                  Mia
+                </div>
                 <div style={{ fontSize: 15, opacity: 0.9 }}>Thinking…</div>
               </div>
             </div>
@@ -272,7 +303,7 @@ export default function Home() {
             onKeyDown={onKeyDown}
           />
 
-          <div style={{ display: "flex", gap: 10, marginTop: 10 }}>
+          <div style={{ display: "flex", gap: 10, marginTop: 10, flexWrap: "wrap" }}>
             <button
               onClick={sendMessage}
               disabled={!canSend}
@@ -280,7 +311,9 @@ export default function Home() {
                 padding: "10px 14px",
                 borderRadius: 12,
                 border: "1px solid rgba(255,255,255,0.14)",
-                background: canSend ? "rgba(59,130,246,0.35)" : "rgba(255,255,255,0.06)",
+                background: canSend
+                  ? "rgba(59,130,246,0.35)"
+                  : "rgba(255,255,255,0.06)",
                 color: "#fff",
                 cursor: canSend ? "pointer" : "not-allowed",
                 fontWeight: 600,
@@ -306,32 +339,59 @@ export default function Home() {
             >
               Clear
             </button>
+
+            {/* ✅ Always-working quick actions */}
             <a
-  href={RESUME_PDF_URL}
-  target="_blank"
-  rel="noreferrer"
-  style={{ textDecoration: "none" }}
->
-  <button
-    type="button"
-    style={{
-      padding: "10px 14px",
-      borderRadius: 12,
-      border: "1px solid rgba(255,255,255,0.14)",
-      background: "rgba(255,255,255,0.06)",
-      color: "#fff",
-      cursor: "pointer",
-      fontWeight: 600,
-    }}
-  >
-    Download Resume (PDF)
-  </button>
-</a>
+              href={RESUME_URL}
+              target="_blank"
+              rel="noreferrer"
+              style={{ textDecoration: "none" }}
+            >
+              <button
+                type="button"
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: 12,
+                  border: "1px solid rgba(255,255,255,0.14)",
+                  background: "rgba(255,255,255,0.06)",
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
+                title="Download Mary’s resume (PDF)"
+              >
+                Download Resume (PDF)
+              </button>
+            </a>
+
+            <a
+              href={SCHEDULE_URL}
+              target="_blank"
+              rel="noreferrer"
+              style={{ textDecoration: "none" }}
+            >
+              <button
+                type="button"
+                style={{
+                  padding: "10px 14px",
+                  borderRadius: 12,
+                  border: "1px solid rgba(255,255,255,0.14)",
+                  background: "rgba(255,255,255,0.06)",
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                }}
+                title="Book a 15-minute intro meeting"
+              >
+                Schedule a meeting
+              </button>
+            </a>
           </div>
         </section>
 
         <footer style={{ marginTop: 14, opacity: 0.65, fontSize: 12 }}>
-          Tip: ask “How do I schedule time?” or “Please provide a printed copy of her resume.”
+          Try: “What roles has Mary held?”, “What services does she offer?”, “Show me
+          her resume”, or “How do I schedule time?”
         </footer>
       </div>
     </main>
