@@ -20,30 +20,50 @@
 
     .card {
       background: white;
-      padding: 28px;
+      padding: 22px;
       border-radius: 16px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.10);
       width: 100%;
       max-width: 560px;
-      text-align: center;
+      text-align: left;
     }
 
-    h1 {
-      margin: 0 0 10px;
-      font-size: 24px;
+    /* B: compact header (no big greeting block to scroll past) */
+    .chat-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      border-bottom: 1px solid rgba(0,0,0,0.08);
     }
 
-    p {
-      opacity: 0.85;
-      line-height: 1.5;
-      margin: 0 0 16px;
-      font-size: 14px;
+    .chat-title {
+      font-size: 16px;
+      font-weight: 750;
+      letter-spacing: 0.2px;
+      line-height: 1.2;
+    }
+
+    .chat-subtitle {
+      font-size: 12px;
+      opacity: 0.72;
+      white-space: nowrap;
+    }
+
+    /* One-line “scope” helper (optional but useful) */
+    .scope-line {
+      margin: 0 0 12px;
+      font-size: 12px;
+      opacity: 0.72;
+      line-height: 1.35;
     }
 
     #chat-log {
-      margin-top: 12px;
+      margin-top: 10px;
       text-align: left;
-      max-height: 240px;
+      height: 260px;              /* fixed chat area; only this scrolls */
       overflow-y: auto;
       padding: 12px;
       border: 1px solid rgba(0,0,0,0.08);
@@ -52,15 +72,19 @@
       font-size: 14px;
     }
 
-    #chat-log div {
+    .msg {
       margin-bottom: 10px;
       line-height: 1.35;
+    }
+
+    .msg strong {
+      font-weight: 750;
     }
 
     #chat-log a {
       color: #4f46e5;
       text-decoration: underline;
-      font-weight: 600;
+      font-weight: 650;
     }
 
     textarea {
@@ -73,6 +97,7 @@
       margin-top: 12px;
       font-size: 14px;
       outline: none;
+      box-sizing: border-box;
     }
 
     button {
@@ -82,7 +107,7 @@
       border: none;
       background: #4f46e5;
       color: white;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
       width: 100%;
       font-size: 14px;
@@ -101,17 +126,20 @@
 
 <body>
   <div class="card">
-    <h1>Mia is online and ready to assist you 🤍</h1>
+    <div class="chat-header">
+      <div class="chat-title">Mia</div>
+      <div class="chat-subtitle">Executive Assistant • Online</div>
+    </div>
 
-    <p>
-      Hi, I’m <strong>Mia</strong>, Mary Murphy’s Executive Assistant.<br /><br />
-      You can ask me about her experience, qualifications, and services.
-      I can also help you download her resume or schedule time to meet with her.<br /><br />
-      Just ask — I’m happy to assist.
+    <p class="scope-line">
+      I can answer questions about Mary Murphy’s experience, qualifications, and services <em>based on her portfolio</em>, and help you download her resume or schedule a meeting.
     </p>
 
-    <div id="chat-log">
-      <div><strong>Mia:</strong> How can I help you today?</div>
+    <div id="chat-log" aria-live="polite">
+      <div class="msg">
+        <strong>Mia:</strong>
+        Hi — I’m Mia, Mary Murphy’s Executive Assistant. Ask me about her experience, qualifications, or services, or say “resume” or “schedule” and I’ll share the link.
+      </div>
     </div>
 
     <textarea
@@ -124,48 +152,69 @@
   </div>
 
   <script>
+    // Links
     const RESUME_URL = "https://mary-murphy.online/resume";
     const CALENDLY_URL = "https://calendly.com/mary-thedreamwork/30min";
 
+    // Elements
     const input = document.getElementById("chat-input");
     const log = document.getElementById("chat-log");
     const btn = document.getElementById("send-btn");
 
+    function escapeHtml(str) {
+      return str
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
     function addMessage(sender, htmlText) {
       const div = document.createElement("div");
+      div.className = "msg";
       div.innerHTML = `<strong>${sender}:</strong> ${htmlText}`;
       log.appendChild(div);
       log.scrollTop = log.scrollHeight;
     }
 
+    // B: concise, non-robotic, still tightly scoped
     function miaReply(userText) {
       const text = userText.toLowerCase();
 
-      // Friendly greetings
-      if (text.includes("hello") || text.includes("hi")) {
-        return "Hi! How can I help you today regarding Mary’s experience, qualifications, or services?";
+      // Greetings / small talk
+      if (/\b(hello|hi|hey|good morning|good afternoon|good evening)\b/.test(text)) {
+        return "Hi! What can I help you with — Mary’s experience, services, resume link, or scheduling?";
       }
 
-      // Resume requests
-      if (text.includes("resume")) {
-        return `You can download Mary’s resume here: <a href="${RESUME_URL}" target="_blank" rel="noreferrer">Download Resume (PDF)</a>`;
+      // Resume
+      if (text.includes("resume") || text.includes("cv")) {
+        return `Here’s the resume page (PDF download): <a href="${RESUME_URL}" target="_blank" rel="noreferrer">Download Resume (PDF)</a>`;
       }
 
-      // Scheduling requests
-      if (text.includes("schedule") || text.includes("meet") || text.includes("calendar")) {
-        return `You can schedule a 15-minute introduction meeting with Mary here: <a href="${CALENDLY_URL}" target="_blank" rel="noreferrer">Schedule a Meeting</a>`;
+      // Scheduling
+      if (text.includes("schedule") || text.includes("meeting") || text.includes("meet") || text.includes("calendar") || text.includes("call")) {
+        return `You can book time with Mary here: <a href="${CALENDLY_URL}" target="_blank" rel="noreferrer">Schedule a Meeting</a>`;
       }
 
-      // Default safe response (within scope)
+      // Out-of-scope guardrails (still friendly)
+      if (text.includes("price") || text.includes("rate") || text.includes("cost")) {
+        return "I can’t quote pricing unless it’s listed on Mary’s portfolio. If you tell me which service you’re looking at, I can point you to what’s published there.";
+      }
+
+      // Default: stay within scope
       return "I can help with questions about Mary’s experience, qualifications, or services (based on her portfolio). What would you like to know?";
     }
 
     function send() {
-      const text = input.value.trim();
-      if (!text) return;
+      const raw = input.value.trim();
+      if (!raw) return;
 
-      addMessage("You", text);
-      addMessage("Mia", miaReply(text));
+      // Show user message safely
+      addMessage("You", escapeHtml(raw));
+
+      // Mia response (contains safe links we generate)
+      addMessage("Mia", miaReply(raw));
 
       input.value = "";
       input.focus();
