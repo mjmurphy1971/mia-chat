@@ -6,9 +6,7 @@ import OpenAI from "openai";
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
-const RESUME_URL = "https://www.mary-murphy.online/mary-murphy-resume-pfd";
 
-// Load SYSTEM_PROMPT.md from project root
 function loadSystemPrompt() {
   const promptPath = path.join(process.cwd(), "SYSTEM_PROMPT.md");
   return fs.readFileSync(promptPath, "utf8");
