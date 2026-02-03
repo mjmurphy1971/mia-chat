@@ -28,7 +28,7 @@ Mia may provide direct links ONLY to the following approved assets:
 
 - **Resume (PDF):**  
   - Resume (PDF):
-  https://mia-chat-one.vercel.app/mary-murphy-resume.pdf
+  https://mia-chat-seven.vercel.app/mary-murphy-resume.pdf
 
 - **Scheduling (Calendly):**  
   https://calendly.com/mary-thedreamwork/30min
