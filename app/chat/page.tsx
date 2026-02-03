@@ -19,7 +19,7 @@ function linkify(text: string): React.ReactNode[] {
           href={part} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="text-blue-600 underline hover:text-blue-800"
+          style={{ color: "#2563eb", textDecoration: "underline" }}
         >
           {part}
         </a>
@@ -62,7 +62,7 @@ export default function ChatPage() {
       const data = await res.json();
       const reply = data.reply || data.error || "Sorry, I could not process that.";
       setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
-    } catch (err) {
+    } catch {
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: "Sorry, something went wrong. Please try again." },
@@ -72,76 +72,148 @@ export default function ChatPage() {
     }
   }
 
+  const styles = {
+    container: {
+      display: "flex",
+      flexDirection: "column" as const,
+      height: "100vh",
+      fontFamily: "system-ui, -apple-system, sans-serif",
+      backgroundColor: "#f9fafb"
+    },
+    header: {
+      padding: "16px 20px",
+      borderBottom: "1px solid #e5e7eb",
+      display: "flex",
+      alignItems: "center",
+      gap: "12px",
+      backgroundColor: "#ffffff"
+    },
+    avatar: {
+      width: "40px",
+      height: "40px",
+      borderRadius: "50%",
+      objectFit: "cover" as const
+    },
+    headerName: {
+      fontWeight: 600,
+      fontSize: "16px",
+      color: "#111827"
+    },
+    headerSubtitle: {
+      fontSize: "12px",
+      color: "#6b7280"
+    },
+    messagesContainer: {
+      flex: 1,
+      overflowY: "auto" as const,
+      padding: "20px",
+      display: "flex",
+      flexDirection: "column" as const,
+      gap: "12px"
+    },
+    welcomeText: {
+      textAlign: "center" as const,
+      color: "#6b7280",
+      marginTop: "40px"
+    },
+    userMessage: {
+      maxWidth: "80%",
+      padding: "12px 16px",
+      borderRadius: "18px 18px 4px 18px",
+      backgroundColor: "#2563eb",
+      color: "#ffffff",
+      fontSize: "14px",
+      lineHeight: "1.5"
+    },
+    assistantMessage: {
+      maxWidth: "80%",
+      padding: "12px 16px",
+      borderRadius: "18px 18px 18px 4px",
+      backgroundColor: "#e5e7eb",
+      color: "#1f2937",
+      fontSize: "14px",
+      lineHeight: "1.5"
+    },
+    form: {
+      padding: "16px 20px",
+      borderTop: "1px solid #e5e7eb",
+      display: "flex",
+      gap: "12px",
+      backgroundColor: "#ffffff"
+    },
+    input: {
+      flex: 1,
+      padding: "12px 16px",
+      borderRadius: "24px",
+      border: "1px solid #d1d5db",
+      fontSize: "14px",
+      outline: "none"
+    },
+    button: {
+      padding: "12px 24px",
+      borderRadius: "24px",
+      border: "none",
+      backgroundColor: "#2563eb",
+      color: "#ffffff",
+      fontWeight: 600,
+      cursor: "pointer"
+    },
+    buttonDisabled: {
+      padding: "12px 24px",
+      borderRadius: "24px",
+      border: "none",
+      backgroundColor: "#9ca3af",
+      color: "#ffffff",
+      fontWeight: 600,
+      cursor: "not-allowed"
+    }
+  };
+
   return (
-    <div className="flex flex-col h-screen font-sans">
-      {/* Header */}
-      <div className="p-4 border-b border-gray-200 flex items-center gap-3 bg-white">
-        <img 
-          src="/mia-avatar.png" 
-          alt="Mia" 
-          className="w-10 h-10 rounded-full object-cover" 
-        />
+    <div style={styles.container}>
+      <div style={styles.header}>
+        <img src="/mia-avatar.png" alt="Mia" style={styles.avatar} />
         <div>
-          <div className="font-semibold text-base">Mia</div>
-          <div className="text-xs text-gray-500">Mary Murphy AI Assistant</div>
+          <div style={styles.headerName}>Mia</div>
+          <div style={styles.headerSubtitle}>Mary Murphy AI Assistant</div>
         </div>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-5 flex flex-col gap-3 bg-gray-50">
+      <div style={styles.messagesContainer}>
         {messages.length === 0 && (
-          <div className="text-center text-gray-500 mt-10">
+          <div style={styles.welcomeText}>
             <p>Hi! I am Mia, Mary Murphy&apos;s AI assistant.</p>
             <p>Ask me about Mary&apos;s experience, skills, or services!</p>
           </div>
         )}
         {messages.map((msg, i) => (
-          <div 
-            key={i} 
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-          >
-            <div 
-              className={`max-w-[80%] px-4 py-3 text-sm leading-relaxed ${
-                msg.role === "user" 
-                  ? "bg-blue-600 text-white rounded-t-2xl rounded-bl-2xl rounded-br-sm" 
-                  : "bg-gray-200 text-gray-800 rounded-t-2xl rounded-br-2xl rounded-bl-sm"
-              }`}
-            >
+          <div key={i} style={{ display: "flex", justifyContent: msg.role === "user" ? "flex-end" : "flex-start" }}>
+            <div style={msg.role === "user" ? styles.userMessage : styles.assistantMessage}>
               {msg.role === "assistant" ? linkify(msg.content) : msg.content}
             </div>
           </div>
         ))}
         {loading && (
-          <div className="flex justify-start">
-            <div className="px-4 py-3 rounded-2xl bg-gray-200 text-gray-600">
-              Mia is typing...
-            </div>
+          <div style={{ display: "flex", justifyContent: "flex-start" }}>
+            <div style={styles.assistantMessage}>Mia is typing...</div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Form */}
-      <form 
-        onSubmit={sendMessage} 
-        className="p-4 border-t border-gray-200 flex gap-3 bg-gray-50"
-      >
+      <form onSubmit={sendMessage} style={styles.form}>
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
           disabled={loading}
-          className="flex-1 px-4 py-3 rounded-full border border-gray-300 text-sm focus:outline-none focus:border-blue-500"
+          style={styles.input}
         />
         <button
           type="submit"
           disabled={loading || !input.trim()}
-          className={`px-6 py-3 rounded-full font-semibold text-white ${
-            loading || !input.trim() 
-              ? "bg-gray-400 cursor-not-allowed" 
-              : "bg-blue-600 hover:bg-blue-700 cursor-pointer"
-          }`}
+          style={loading || !input.trim() ? styles.buttonDisabled : styles.button}
         >
           Send
         </button>
