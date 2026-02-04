@@ -8,7 +8,7 @@ interface Message {
 }
 
 function makeLinksClickable(text: string): string {
-  const urlRegex = /(https?:\/\/[^\s]+ )/g;
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
   return text.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline;">$1</a>');
 }
 
