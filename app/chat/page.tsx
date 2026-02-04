@@ -7,26 +7,9 @@ interface Message {
   content: string;
 }
 
-function linkify(text: string): React.ReactNode[] {
+function makeLinksClickable(text: string): string {
   const urlRegex = /(https?:\/\/[^\s]+ )/g;
-  const parts = text.split(urlRegex);
-  
-  return parts.map((part, index) => {
-    if (part.match(urlRegex)) {
-      return (
-        <a 
-          key={index} 
-          href={part} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          style={{ color: "#2563eb", textDecoration: "underline" }}
-        >
-          {part}
-        </a>
-      );
-    }
-    return <span key={index}>{part}</span>;
-  });
+  return text.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #2563eb; text-decoration: underline;">$1</a>');
 }
 
 export default function ChatPage() {
@@ -188,9 +171,14 @@ export default function ChatPage() {
         )}
         {messages.map((msg, i) => (
           <div key={i} style={{ display: "flex", justifyContent: msg.role === "user" ? "flex-end" : "flex-start" }}>
-            <div style={msg.role === "user" ? styles.userMessage : styles.assistantMessage}>
-              {msg.role === "assistant" ? linkify(msg.content) : msg.content}
-            </div>
+            {msg.role === "assistant" ? (
+              <div 
+                style={styles.assistantMessage}
+                dangerouslySetInnerHTML={{ __html: makeLinksClickable(msg.content) }}
+              />
+            ) : (
+              <div style={styles.userMessage}>{msg.content}</div>
+            )}
           </div>
         ))}
         {loading && (
